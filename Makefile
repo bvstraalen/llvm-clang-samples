@@ -40,7 +40,7 @@
 # directory of the binary download (the directory that has bin/, lib/, include/
 # and other directories inside).
 # See the build_vs_released_binary.sh script for an example.
-LLVM_SRC_PATH := $$HOME/llvm/llvm_svn_rw
+LLVM_SRC_PATH := /usr/local/opt/llvm
 
 # LLVM_BUILD_PATH is the directory in which you built LLVM - where you ran
 # configure or cmake.
@@ -49,7 +49,7 @@ LLVM_SRC_PATH := $$HOME/llvm/llvm_svn_rw
 # process. It should contain the tools like opt, llc and clang. The default
 # reflects a release build with CMake and Ninja. binary build of LLVM, point it
 # to the bin/ directory.
-LLVM_BUILD_PATH := $$HOME/llvm/build/svn-ninja-release
+LLVM_BUILD_PATH := /usr/local/opt/llvm
 LLVM_BIN_PATH 	:= $(LLVM_BUILD_PATH)/bin
 
 $(info -----------------------------------------------)
@@ -58,7 +58,8 @@ $(info Using LLVM_BUILD_PATH = $(LLVM_BUILD_PATH))
 $(info Using LLVM_BIN_PATH = $(LLVM_BIN_PATH))
 $(info -----------------------------------------------)
 
-CXX := g++
+CXX := /usr/local/opt/llvm/bin/clang++
+#CXX := g++
 CXXFLAGS := -fno-rtti -O0 -g
 PLUGIN_CXXFLAGS := -fpic
 
@@ -70,7 +71,8 @@ LLVM_LDFLAGS := `$(LLVM_BIN_PATH)/llvm-config --ldflags --libs --system-libs`
 # libs to be linked more than once because it uses globals for configuration
 # and plugin registration, and these trample over each other.
 LLVM_LDFLAGS_NOLIBS := `$(LLVM_BIN_PATH)/llvm-config --ldflags`
-PLUGIN_LDFLAGS := -shared
+PLUGIN_LDFLAGS := -shared -undefined dynamic_lookup
+#PLUGIN_LDFLAGS := `$(LLVM_BIN_PATH)/llvm-config --link-shared`
 
 # These are required when compiling vs. a source distribution of Clang. For
 # binary distributions llvm-config --cxxflags gives the right path.
@@ -85,7 +87,7 @@ CLANG_INCLUDES := \
 # to specify and maintain. The linker group options make the linking somewhat
 # slower, but IMHO they're still perfectly fine for tools that link with Clang.
 CLANG_LIBS := \
-	-Wl,--start-group \
+	-Wl, \
 	-lclangAST \
 	-lclangASTMatchers \
 	-lclangAnalysis \
@@ -107,7 +109,7 @@ CLANG_LIBS := \
 	-lclangToolingCore \
 	-lclangTooling \
 	-lclangFormat \
-	-Wl,--end-group
+	-Wl,
 
 # Internal paths in this project: where to find sources, and where to put
 # build artifacts.
